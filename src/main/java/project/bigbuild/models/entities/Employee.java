@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name="departments")
+@Table(name="employee")
 public class Employee
 {
     String name;
@@ -17,4 +17,5 @@ public class Employee
     String login;
     String dept;
     Date onboarded;
+    String emailId;
 }

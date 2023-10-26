@@ -14,4 +14,5 @@ public class Department
     String code;
     String dept;
     String description;
+    String emailId;
 }
