@@ -66,4 +66,9 @@ public class AddDepartmentService
     {
         departmentRepo.saveAll(departmentList);
     }
+
+    public Department addNewDepartment(Department department)
+    {
+        return departmentRepo.save(department);
+    }
 }

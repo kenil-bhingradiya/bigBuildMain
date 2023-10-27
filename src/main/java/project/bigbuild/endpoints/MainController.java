@@ -1,10 +1,7 @@
 package project.bigbuild.endpoints;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import project.bigbuild.models.entities.Department;
 import project.bigbuild.models.entities.Employee;
@@ -46,5 +43,23 @@ public class MainController
     public List<Employee> getAllUser()
     {
         return userCreateService.getAllUser();
+    }
+
+    @PostMapping("/createOneDepartment")
+    public Department createOneDepartment(@RequestBody Department department) throws IOException
+    {
+        return addDepartmentService.addNewDepartment(department);
+    }
+
+    @PostMapping("/createOneUser")
+    public Map<Employee, String> createUserFromExcel(@RequestBody  Employee employee) throws Exception
+    {
+        return userCreateService.createOneUser(employee);
+    }
+
+    @PostMapping("deleteUser")
+    public boolean deleteUser(@RequestBody String username)
+    {
+        return userCreateService.deleteUser(username);
     }
 }

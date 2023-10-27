@@ -15,5 +15,5 @@ public class WindowsPostInput
     String passwd;
     String department;
     String displayName;
-
+    String email;
 }

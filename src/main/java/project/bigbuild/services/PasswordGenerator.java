@@ -38,7 +38,9 @@ public class PasswordGenerator
         password.insert(random.nextInt(password.length()), numbers[random.nextInt(numbers.length)]);
         password.insert(random.nextInt(password.length()), symbols[random.nextInt(symbols.length)]);
 
-        return password.toString();
+        String passwd = password.toString();
+
+        return "Ab" + passwd.substring(0,4) + passwd.substring(4,length);
 
     }
 }

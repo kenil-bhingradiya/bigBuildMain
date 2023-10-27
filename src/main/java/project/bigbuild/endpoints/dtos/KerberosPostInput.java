@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class KerberosPostInput
 {
-    String username;
+    String user;
     String passwd;
 }

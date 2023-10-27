@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class LinuxPostInput
 {
-    String username;
+    String user;
     String passwd;
     String department;
 }

@@ -53,9 +53,12 @@ public class UserCreateService
             Boolean createLinuxUser = createLinuxUser(employee, password);
             Boolean createKerberosUser = createKerberosUser(employee, password);
 
+            System.out.println("Username: - " + employee.getLogin() + " Password: - " + password);
+            System.out.println(createWindowsUser + " "+ createLinuxUser + " " + createKerberosUser);
             if(createWindowsUser && createLinuxUser && createKerberosUser)
             {
                 result.put(employee, "User Created SuccessFully." + password);
+                employeeRepo.save(employee);
             }
             else
             {
@@ -98,11 +101,11 @@ public class UserCreateService
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        WindowsPostInput winIp = new WindowsPostInput(employee.getName(), employee.getName(), employee.getName(), employee.getLogin(), password, employee.getDept(), employee.getName());
+        WindowsPostInput winIp = new WindowsPostInput(employee.getName(), employee.getName(), employee.getName(), employee.getLogin(), password, employee.getDept(), employee.getName(), employee.getEmailId());
         System.out.println("creating windows user..");
         HttpEntity<WindowsPostInput> httpEntity = new HttpEntity<>(winIp, headers);
         String resp = this.restTemplate.postForObject(windowsServerUrl + "/create/newUser", httpEntity, String.class);
-
+        System.out.println(resp);
         return Objects.equals(resp, "User Created Successfully!!");
     }
 
@@ -112,11 +115,10 @@ public class UserCreateService
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         LinuxPostInput linuxIp = new LinuxPostInput(employee.getLogin(), password, employee.getDept());
-
         HttpEntity<LinuxPostInput> httpEntity = new HttpEntity<>(linuxIp, headers);
-        System.out.println("creating linux user. " + linuxClientUrl + "/create/newLinuxUser");
+        System.out.println("creating linux user... ");
         String resp = this.restTemplate.postForObject(linuxClientUrl + "/create/newLinuxUser", httpEntity, String.class);
-
+        System.out.println(resp);
         return Objects.equals(resp, "User Created Successfully!!");
     }
 
@@ -124,17 +126,44 @@ public class UserCreateService
     {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
+        System.out.println("creating kerberos user..");
         KerberosPostInput kerberosIp = new KerberosPostInput(employee.getLogin(), password);
 
         HttpEntity<KerberosPostInput> httpEntity = new HttpEntity<>(kerberosIp, headers);
         String resp = this.restTemplate.postForObject(linuxServerUrl + "/create/newKerberosUser", httpEntity, String.class);
-
-        return Objects.equals(resp, "User Created Successfully!!");
+        System.out.println(resp);
+        return Objects.equals(resp, "Kerberos User Created Successfully!!");
     }
 
     public List<Employee> getAllUser()
     {
         return employeeRepo.findAll();
+    }
+
+    public Map<Employee, String> createOneUser(Employee employee)
+    {
+        Map<Employee, String> result = new HashMap<>();
+        String password = passwordGenerator.generatePassword(10);
+        Boolean createWindowsUser = createWindowsUsers(employee, password);
+        Boolean createLinuxUser = createLinuxUser(employee, password);
+        Boolean createKerberosUser = createKerberosUser(employee, password);
+
+        System.out.println("Username: - " + employee.getLogin() + " Password: - " + password);
+        System.out.println(createWindowsUser + " "+ createLinuxUser + " " + createKerberosUser);
+        if(createWindowsUser && createLinuxUser && createKerberosUser)
+        {
+            result.put(employee, "User Created SuccessFully." + password);
+            employeeRepo.save(employee);
+        }
+        else
+        {
+            result.put(employee, "Fail to Create User.");
+        }
+        return result;
+    }
+
+    public boolean deleteUser(String username)
+    {
+        return Boolean.TRUE.equals(this.restTemplate.getForObject(linuxClientUrl + "/deleteUser/" + username, boolean.class));
     }
 }
