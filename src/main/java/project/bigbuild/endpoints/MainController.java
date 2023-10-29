@@ -61,9 +61,21 @@ public class MainController
         return userCreateService.createOneUser(employee);
     }
 
-    @PostMapping("/deleteUser")
-    public boolean deleteUser(@RequestBody String username)
+    @GetMapping("/deleteUser/{username}")
+    public boolean deleteUser(@PathVariable("username") String username)
     {
         return userCreateService.deleteUser(username);
+    }
+
+    @GetMapping("/allDept")
+    public List<Department> allDept()
+    {
+        return addDepartmentService.allDept();
+    }
+
+    @GetMapping("/allEmp")
+    public List<Employee> allEmp()
+    {
+        return userCreateService.allEmp();
     }
 }

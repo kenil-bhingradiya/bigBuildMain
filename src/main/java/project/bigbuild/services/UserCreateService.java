@@ -51,7 +51,7 @@ public class UserCreateService
 
         for (Employee employee: userList)
         {
-            if(employeeRepo.findById(employee.getLogin()).isPresent())
+            if(employeeRepo.findById(employee.getLogin()).isEmpty())
             {
                 String password = passwordGenerator.generatePassword(10);
                 Boolean createWindowsUser = createWindowsUsers(employee, password);
@@ -60,7 +60,8 @@ public class UserCreateService
 
                 System.out.println("Username: - " + employee.getLogin() + " Password: - " + password);
                 System.out.println(createWindowsUser + " " + createLinuxUser + " " + createKerberosUser);
-                if (createWindowsUser && createLinuxUser && createKerberosUser) {
+                if (createWindowsUser && createLinuxUser && createKerberosUser)
+                {
                     result.put(employee, "User Created SuccessFully." + password);
                     employeeRepo.save(employee);
                     emailService.sendEmail(
@@ -103,8 +104,14 @@ public class UserCreateService
     {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        String[] names = employee.getName().split(" ");
 
-        WindowsPostInput winIp = new WindowsPostInput(employee.getName(), employee.getName(), employee.getName(), employee.getLogin(), password, employee.getDept(), employee.getName(), employee.getEmailId());
+        // Get the first name.
+        String firstName = names[0];
+
+        // Get the last name.
+        String lastName = names[names.length - 1];
+        WindowsPostInput winIp = new WindowsPostInput(employee.getName(), firstName, lastName, employee.getLogin(), password, employee.getDept(), employee.getName(), employee.getEmailId());
         System.out.println("creating windows user..");
         HttpEntity<WindowsPostInput> httpEntity = new HttpEntity<>(winIp, headers);
         String resp = this.restTemplate.postForObject(windowsServerUrl + "/create/newUser", httpEntity, String.class);
@@ -167,6 +174,12 @@ public class UserCreateService
 
     public boolean deleteUser(String username)
     {
-        return Boolean.TRUE.equals(this.restTemplate.getForObject(linuxClientUrl + "/deleteUser/" + username, boolean.class));
+        employeeRepo.deleteById(username);
+        return true;
+    }
+
+    public List<Employee> allEmp()
+    {
+        return employeeRepo.findAll();
     }
 }

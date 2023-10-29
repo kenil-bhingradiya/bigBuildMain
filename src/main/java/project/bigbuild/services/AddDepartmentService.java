@@ -71,4 +71,9 @@ public class AddDepartmentService
     {
         return departmentRepo.save(department);
     }
+
+    public List<Department> allDept()
+    {
+        return departmentRepo.findAll();
+    }
 }
