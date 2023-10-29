@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import project.bigbuild.models.entities.Department;
 import project.bigbuild.models.entities.Employee;
 import project.bigbuild.services.AddDepartmentService;
+import project.bigbuild.services.EmailService;
 import project.bigbuild.services.UserCreateService;
 
 import java.io.IOException;
@@ -20,6 +21,9 @@ public class MainController
 
     @Autowired
     UserCreateService userCreateService;
+
+    @Autowired
+    EmailService emailService;
 
     @GetMapping("/")
     public String helloWorld()
@@ -57,7 +61,7 @@ public class MainController
         return userCreateService.createOneUser(employee);
     }
 
-    @PostMapping("deleteUser")
+    @PostMapping("/deleteUser")
     public boolean deleteUser(@RequestBody String username)
     {
         return userCreateService.deleteUser(username);

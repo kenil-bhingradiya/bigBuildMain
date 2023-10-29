@@ -19,8 +19,8 @@ public class PasswordGenerator
         final char[] lowercase = "abcdefghijklmnopqrstuvwxyz".toCharArray();
         final char[] uppercase = "ABCDEFGJKLMNPRSTUVWXYZ".toCharArray();
         final char[] numbers = "0123456789".toCharArray();
-        final char[] symbols = "^$?!@#%&".toCharArray();
-        final char[] allAllowed = "abcdefghijklmnopqrstuvwxyzABCDEFGJKLMNPRSTUVWXYZ0123456789^$?!@#%&".toCharArray();
+        final char[] symbols = "$@#%".toCharArray();
+        final char[] allAllowed = "abcdefghijklmnopqrstuvwxyzABCDEFGJKLMNPRSTUVWXYZ0123456789$@#%".toCharArray();
 
         //Use cryptographically secure random number generator
         Random random = new SecureRandom();
@@ -40,7 +40,7 @@ public class PasswordGenerator
 
         String passwd = password.toString();
 
-        return "Ab" + passwd.substring(0,4) + passwd.substring(4,length);
+        return "Ab" + passwd.substring(length-4, length) + passwd.substring(0,length-4);
 
     }
 }

@@ -31,6 +31,9 @@ public class UserCreateService
 
     @Autowired
     PasswordGenerator passwordGenerator;
+
+    @Autowired
+    EmailService emailService;
     
     @Value("${url.windowsserver}")
     private String windowsServerUrl;
@@ -48,21 +51,25 @@ public class UserCreateService
 
         for (Employee employee: userList)
         {
-            String password = passwordGenerator.generatePassword(10);
-            Boolean createWindowsUser = createWindowsUsers(employee, password);
-            Boolean createLinuxUser = createLinuxUser(employee, password);
-            Boolean createKerberosUser = createKerberosUser(employee, password);
+            if(employeeRepo.findById(employee.getLogin()).isPresent())
+            {
+                String password = passwordGenerator.generatePassword(10);
+                Boolean createWindowsUser = createWindowsUsers(employee, password);
+                Boolean createLinuxUser = createLinuxUser(employee, password);
+                Boolean createKerberosUser = createKerberosUser(employee, password);
 
-            System.out.println("Username: - " + employee.getLogin() + " Password: - " + password);
-            System.out.println(createWindowsUser + " "+ createLinuxUser + " " + createKerberosUser);
-            if(createWindowsUser && createLinuxUser && createKerberosUser)
-            {
-                result.put(employee, "User Created SuccessFully." + password);
-                employeeRepo.save(employee);
-            }
-            else
-            {
-                result.put(employee, "Fail to Create User.");
+                System.out.println("Username: - " + employee.getLogin() + " Password: - " + password);
+                System.out.println(createWindowsUser + " " + createLinuxUser + " " + createKerberosUser);
+                if (createWindowsUser && createLinuxUser && createKerberosUser) {
+                    result.put(employee, "User Created SuccessFully." + password);
+                    employeeRepo.save(employee);
+                    emailService.sendEmail(
+                            employee.getEmailId(),
+                            "Username and Password",
+                            "Hello " + employee.getName() + ",\n\tHere is your login id and password for linux and Windows user,\n\nLoginId: - " + employee.getLogin() + "\nPassword: - " + password + "\n\n Please reset your password on first login\n\nThank You.\nSystem Administrator - Kenil");
+                } else {
+                    result.put(employee, "Fail to Create User.");
+                }
             }
         }
 
@@ -90,10 +97,6 @@ public class UserCreateService
         }
         System.out.println(userList);
         return userList;
-    }
-    public void addEmployees(List<Employee> employeeList)
-    {
-        employeeRepo.saveAll(employeeList);
     }
 
     public Boolean createWindowsUsers(Employee employee, String password)
